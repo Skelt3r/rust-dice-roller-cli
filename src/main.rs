@@ -13,7 +13,8 @@ fn multi_dice_roll(num_dice: i32, num_sides: i32, modifier: i32) -> (Vec<i32>, i
     let mut results: Vec<i32> = Vec::new();
     
     for _ in 1..num_dice+1 {
-        results.push(dice_roll(num_sides, 0).0);
+        let roll = dice_roll(num_sides, 0).0;
+        results.push(roll);
     }
 
     let sum: i32 = results.iter().sum();
@@ -101,9 +102,11 @@ fn main() {
 
         if nums.len() > 1 {
             if nums[0] == 1 {
-                print_single_roll(dice_roll(nums[1], nums[2]));
+                let roll = dice_roll(nums[1], nums[2]);
+                print_single_roll(roll);
             } else {
-                print_multi_roll(multi_dice_roll(nums[0], nums[1], nums[2]));
+                let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
+                print_multi_roll(rolls);
             }
         }
     }

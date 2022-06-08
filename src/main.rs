@@ -46,7 +46,7 @@ fn print_help() {
 }
 
 // Print error message and restart the main loop
-fn print_error() -> i32 {
+fn raise_error() -> i32 {
     println!("\nBad input, try again.");
     main();
     1
@@ -76,18 +76,22 @@ fn process_user_input(command: String) -> Vec<i32> {
         for n in numstrings {
             nums.push(match n.trim().parse() {
                 Ok(num) => num,
-                Err(_) => print_error(),
+                Err(_) => raise_error(),
             });
         }
-    
-        let i1: Vec<char> = input[1].chars().collect();
-    
-        if i1.contains(&'-') {
-            nums.splice(2..3, [-nums[2]]);
-        }
-    
-        if nums.len() < 3 {
-            nums.push(0);
+        
+        if input.len() > 1 {
+            let i1: Vec<char> = input[1].chars().collect();
+        
+            if i1.contains(&'-') {
+                nums.splice(2..3, [-nums[2]]);
+            }
+
+            while nums.len() < 3 {
+                nums.push(0);
+            }
+        } else {
+            raise_error();
         }
     }
 
@@ -100,14 +104,12 @@ fn main() {
         let command = get_user_input();
         let nums = process_user_input(command);
 
-        if nums.len() > 1 {
-            if nums[0] == 1 {
-                let roll = dice_roll(nums[1], nums[2]);
-                print_single_roll(roll);
-            } else {
-                let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
-                print_multi_roll(rolls);
-            }
+        if nums[0] == 1 {
+            let roll = dice_roll(nums[1], nums[2]);
+            print_single_roll(roll);
+        } else {
+            let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
+            print_multi_roll(rolls);
         }
     }
 }

@@ -47,7 +47,7 @@ fn print_help() {
 // Print error message and restart the main loop
 fn print_error() -> i32 {
     println!("\nBad input, try again.");
-    run();
+    main();
     1
 }
 
@@ -93,7 +93,8 @@ fn process_user_input(command: String) -> Vec<i32> {
     nums
 }
 
-fn run() {
+#[quit::main]
+fn main() {
     loop {
         let command = get_user_input();
         let nums = process_user_input(command);
@@ -106,9 +107,4 @@ fn run() {
             }
         }
     }
-}
-
-#[quit::main]
-fn main() {
-    run()
 }

@@ -1,14 +1,13 @@
 use rand::Rng;
 use std::io;
 
-// Return a random number between 1 and the given range
+// Return a random number between 1 and the given range and apply the modifier
 fn dice_roll(num_sides: i32,  modifier: i32) -> (i32, i32, i32) {
     let roll = rand::thread_rng().gen_range(1..num_sides+1);
-    let sum = roll+modifier;
-    (roll, modifier, sum)
+    (roll, modifier, roll+modifier)
 }
 
-// Return a vector of random numbers within the given range and the sum of the vector
+// Return a vector of random numbers between 1 and the given range along with the sum of the vector and modifier
 fn multi_dice_roll(num_dice: i32, num_sides: i32, modifier: i32) -> (Vec<i32>, i32, i32) {
     let mut results: Vec<i32> = Vec::new();
     
@@ -22,7 +21,7 @@ fn multi_dice_roll(num_dice: i32, num_sides: i32, modifier: i32) -> (Vec<i32>, i
     (results, modifier, sum+modifier)
 }
 
-// Print a single roll to the console
+// Print the result of a single roll to the console
 fn print_single_roll(roll: (i32, i32, i32)) {
     println!("\nResult: {}", roll.0);
     println!("Modifier: {}", roll.1);
@@ -36,7 +35,7 @@ fn print_multi_roll(rolls: (Vec<i32>, i32, i32)) {
     println!("Sum: {}", rolls.2)
 }
 
-// Print help info
+// Print helpful info
 fn print_help() {
     println!("----------------------------------------------------");
     println!("\nRoll dice with any of the following command formats:\nxdx\nxdx+x\nxdx-x ");
@@ -60,7 +59,7 @@ fn get_user_input() -> String {
     command
 }
 
-// Process the user's input string and return usable elements
+// Validate and process the user's input string, return usable elements
 fn process_user_input(command: String) -> Vec<i32> {
     let mut nums: Vec<i32> = Vec::new();
     let trim = command.trim();
@@ -98,6 +97,7 @@ fn process_user_input(command: String) -> Vec<i32> {
     nums
 }
 
+// Process user input and pass to the appropriate dice function 
 #[quit::main]
 fn main() {
     loop {

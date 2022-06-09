@@ -59,8 +59,8 @@ fn get_user_input() -> String {
     command
 }
 
-// Validate and process the user's input string, return usable elements
-fn process_user_input(command: String) -> Vec<i32> {
+// Validate and process the user's input string, pass usable elements to the appropriate dice function
+fn process_user_input(command: String) {
     let mut nums: Vec<i32> = Vec::new();
     let trim = command.trim();
 
@@ -89,27 +89,25 @@ fn process_user_input(command: String) -> Vec<i32> {
             while nums.len() < 3 {
                 nums.push(0);
             }
+
+            if nums[0] == 1 {
+                let roll = dice_roll(nums[1], nums[2]);
+                print_single_roll(roll);
+            } else {
+                let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
+                print_multi_roll(rolls);
+            }
         } else {
             raise_error();
         }
     }
-
-    nums
 }
 
-// Process user input and pass to the appropriate dice function 
+// Continuously process input until the user exits the program
 #[quit::main]
 fn main() {
     loop {
         let command = get_user_input();
-        let nums = process_user_input(command);
-
-        if nums[0] == 1 {
-            let roll = dice_roll(nums[1], nums[2]);
-            print_single_roll(roll);
-        } else {
-            let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
-            print_multi_roll(rolls);
-        }
+        process_user_input(command);
     }
 }

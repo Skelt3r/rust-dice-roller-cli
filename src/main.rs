@@ -38,7 +38,7 @@ fn print_multi_roll(rolls: (Vec<i32>, i32, i32)) {
 // Print helpful info
 fn print_help() {
     println!("----------------------------------------------------");
-    println!("\nRoll dice with any of the following command formats:\nxdx\nxdx+x\nxdx-x ");
+    println!("Roll dice with any of the following command formats:\nxdx\nxdx+x\nxdx-x ");
     println!("\nExamples:\n1d20\n2d8+5\n4d6-1");
     println!("\nType \"exit\" or \"quit\" to terminate the program.");
     println!("----------------------------------------------------");
@@ -48,7 +48,7 @@ fn print_help() {
 fn raise_error() -> i32 {
     println!("\nBad input, try again.");
     main();
-    1
+    0
 }
 
 // Get user input from the command line
@@ -60,45 +60,43 @@ fn get_user_input() -> String {
 }
 
 // Validate and process the user's input string, pass usable elements to the appropriate dice function
-fn process_user_input(command: String) {
-    let mut nums: Vec<i32> = Vec::new();
-    let trim = command.trim();
-
-    if trim == "help" {
-        print_help();
-    } else if trim == "quit" || trim == "exit" {
-        quit::with_code(0);
-    } else {
-        let numstrings: Vec<&str> = command.split(&['d', '-', '+'][..]).collect();
-        let input: Vec<&str> = command.split_inclusive(&['d', '-', '+'][..]).collect();
+fn process_user_input(command: &str) {
+    match command {
+        "help" => print_help(),
+        "exit" | "quit" => quit::with_code(0),
+        _ => {
+            let mut nums: Vec<i32> = Vec::new();
+            let numstrings: Vec<&str> = command.split(&['d', '-', '+'][..]).collect();
+            let input: Vec<&str> = command.split_inclusive(&['d', '-', '+'][..]).collect();
+        
+            for n in numstrings {
+                nums.push(match n.trim().parse() {
+                    Ok(num) => num,
+                    Err(_) => raise_error(),
+                });
+            }
+            
+            if input.len() > 1 {
+                let i1: Vec<char> = input[1].chars().collect();
+            
+                if i1.contains(&'-') {
+                    nums.splice(2..3, [-nums[2]]);
+                }
     
-        for n in numstrings {
-            nums.push(match n.trim().parse() {
-                Ok(num) => num,
-                Err(_) => raise_error(),
-            });
-        }
-        
-        if input.len() > 1 {
-            let i1: Vec<char> = input[1].chars().collect();
-        
-            if i1.contains(&'-') {
-                nums.splice(2..3, [-nums[2]]);
-            }
-
-            while nums.len() < 3 {
-                nums.push(0);
-            }
-
-            if nums[0] == 1 {
-                let roll = dice_roll(nums[1], nums[2]);
-                print_single_roll(roll);
+                while nums.len() < 3 {
+                    nums.push(0);
+                }
+    
+                if nums[0] == 1 {
+                    let roll = dice_roll(nums[1], nums[2]);
+                    print_single_roll(roll);
+                } else {
+                    let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
+                    print_multi_roll(rolls);
+                }
             } else {
-                let rolls = multi_dice_roll(nums[0], nums[1], nums[2]);
-                print_multi_roll(rolls);
+                raise_error();
             }
-        } else {
-            raise_error();
         }
     }
 }
@@ -108,6 +106,6 @@ fn process_user_input(command: String) {
 fn main() {
     loop {
         let command = get_user_input();
-        process_user_input(command);
+        process_user_input(command.to_lowercase().trim());
     }
 }
